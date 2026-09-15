@@ -6,9 +6,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-TOKEN = "8660961782:AAFSAGSzJIARBalfZtDYW3FNLbCEtCNcgJU"
-CHAT_ADMIN = -1004356211402
-ORDER_CHAT_ADMIN = 2
+TOKEN = getenv("TOKEN")
+CHAT_ADMIN = getenv("CHAT_ADMIN")
+ORDER_CHAT_ADMIN = getenv("ORDER_CHAT_ADMIN")
 dp = Dispatcher()
 processed_albums = set()
 

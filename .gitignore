@@ -1,2 +1,9 @@
-.venv
+# Виртуальное окружение Python
+.venv/
+venv/
+ENV/
+
+# Конфиденциальные данные и настройки
 .env
+.env.local
+.env.*.local

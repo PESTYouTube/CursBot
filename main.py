@@ -5,36 +5,18 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+import default_func
+import text
 
 TOKEN = getenv("TOKEN")
 CHAT_ADMIN = getenv("CHAT_ADMIN")
 ORDER_CHAT_ADMIN = getenv("ORDER_CHAT_ADMIN")
 dp = Dispatcher()
 processed_albums = set()
+dp.include_router(default_func.router)
 
-@dp.message(Command("start"))
-async def start(message: types.Message) -> None:
-    builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(
-        text="Запись на курсы",
-        callback_data="curs_learn"
-    ))
-    builder.add(types.InlineKeyboardButton(
-        text="Заказать практическую",
-        callback_data="action_order"
-    ))
-    builder.adjust(2)
-    await message.answer("Привет ты решил подтянуть свои знания в языках программирования"+
-                         " или лень писать практические работы ты попал туда куда надо!\n"+
-                         "Выбери что тебе нужно сделать опиши и мы с тобой свяжемся в ближайшее время!",
-                         reply_markup=builder.as_markup())
     # await message.bot.send_message(chat_id = CHAT_ADMIN,text=f"Пользователь {message.from_user.username} запустил бота")
 
-
-
-@dp.message(Command("help"))
-async def help(message: types.Message) -> None:
-    await message.answer("Помощь")
 
 class OrderStates(StatesGroup):
     waiting_for_description = State()  # Состояние: бот ждет описание от пользователя
@@ -57,7 +39,7 @@ async def action_order(callback: types.CallbackQuery, state: FSMContext):
             callback_data="back_to_start",
         ))
         builder.adjust(2)
-        await callback.message.edit_text("Отлично! Теперь выбери какой язык программирования ты хочешь?",
+        await callback.message.edit_text("Отлично!\nТеперь выбери, какой язык программирования ты хочешь изучить?",
                                       reply_markup=builder.as_markup()
         )
     elif callback.data == "back_to_start":
@@ -71,9 +53,7 @@ async def action_order(callback: types.CallbackQuery, state: FSMContext):
             callback_data="action_order"
         ))
         builder.adjust(2)
-        await callback.message.edit_text("Привет ты решил подтянуть свои знания в языках программирования" +
-                             " или лень писать практические работы ты попал туда куда надо!\n" +
-                             "Выбери что тебе нужно сделать опиши и мы с тобой свяжемся в ближайшее время!",
+        await callback.message.edit_text(text.STARTING_MESSAGE,
                              reply_markup=builder.as_markup())
         await callback.answer()
 
@@ -88,7 +68,7 @@ async def action_order(callback: types.CallbackQuery, state: FSMContext):
             callback_data="back_to_start"
         ))
         await callback.message.edit_text("Идет загрузка данных")
-        await callback.message.edit_text("Прайс лист:\nОдин урок - 1000\n4 урока - 3500\n8 уроков - 6000",
+        await callback.message.edit_text(text.COURSE_PRICE_LIST,
                                          reply_markup=builder.as_markup())
     elif callback.data == "learn_python":
         builder = InlineKeyboardBuilder()
@@ -101,7 +81,7 @@ async def action_order(callback: types.CallbackQuery, state: FSMContext):
             callback_data="back_to_start"
         ))
         await callback.message.edit_text("Идет загрузка данных")
-        await callback.message.edit_text("Прайс лист:\nОдин урок - 1000\n4 урока - 3500\n8 уроков - 6000",reply_markup=builder.as_markup())
+        await callback.message.edit_text(text.COURSE_PRICE_LIST, reply_markup=builder.as_markup())
 
 
         await callback.answer()
@@ -112,7 +92,7 @@ async def action_order(callback: types.CallbackQuery, state: FSMContext):
             text="Назад",
             callback_data="back_to_start"
         ))
-        await callback.message.edit_text("Опиши что тебе необходимо написать, отправь фото или вставь текст",reply_markup=builder.as_markup())
+        await callback.message.edit_text("Отлично!\nТеперь опиши, что тебе необходимо написать, отправь фото или вставь текст", reply_markup=builder.as_markup())
         await state.set_state(OrderStates.waiting_for_description)
         await callback.answer()
 
